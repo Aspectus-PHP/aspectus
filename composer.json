@@ -1,0 +1,28 @@
+{
+    "name": "aspectus/aspectus",
+    "description": "A TUI framework",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.1",
+        "revolt/event-loop": "^1.0",
+        "aspectus/terminal": "^0.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aspectus\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "thgs",
+            "email": "theogpl57@gmail.com"
+        }
+    ],
+    "config": {
+        "sort-packages": true
+    },
+    "require-dev": {
+        "psalm/phar": "^5.9"
+    }
+}
