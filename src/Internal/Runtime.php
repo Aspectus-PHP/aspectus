@@ -10,7 +10,7 @@ use Aspectus\Message;
 
 /**
  * @internal
- * @psalm-internal
+ * @psalm-internal Aspectus
  */
 final class Runtime implements Component
 {
@@ -35,10 +35,4 @@ final class Runtime implements Component
     {
         return $this->component->view();
     }
-
-    public function subscribes(): array
-    {
-        return $this->component->subscribes();
-    }
-
 }

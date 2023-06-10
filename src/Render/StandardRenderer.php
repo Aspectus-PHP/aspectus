@@ -15,7 +15,7 @@ class StandardRenderer implements Renderer
 
     public function render(Component $component): void
     {
-        $this->xterm->write($component->view($component))
+        $this->xterm->write($component->view())
             ->flush();  // thats self-referential here :D visitor maybe?
     }
 }
