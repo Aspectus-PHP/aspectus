@@ -59,7 +59,7 @@ class Timer implements Component
             ;
     }
 
-    public function update(Message $message): ?Message
+    public function update(?Message $message): ?Message
     {
         return match ($message->type) {
             Message::INIT => $this->init($message['reference']),

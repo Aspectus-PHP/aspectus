@@ -134,7 +134,7 @@ class MouseInputViewer implements Component
             ;
     }
 
-    public function update(Message $message): ?Message
+    public function update(?Message $message): ?Message
     {
         // reset some of the state
         $this->mouseEvent = null;
