@@ -173,8 +173,11 @@ class MouseInputViewer implements Component
     private function toggleFocusTracking(): ?Message
     {
         $this->focusTracking = !$this->focusTracking;
-        $this->xterm->write("\e[?1004" . ($this->focusTracking ? 'h' : 'l'))
-            ->flush();
+        $this->focusTracking
+            ? $this->xterm->setPrivateModeTrackMouseFocus()
+            : $this->xterm->unsetPrivateModeTrackMouseFocus();
+
+        $this->xterm->flush();
         return null;
     }
 
@@ -212,12 +215,12 @@ class MouseInputViewer implements Component
         if ($encoding === 'sgr') {
             $this->encoding = 'sgr';
 
-            $this->xterm->write("\e[?1006h")->flush();    // todo: missing from Xterm
+            $this->xterm->setPrivateModeTrackMouseSgrExt()->flush();
         }
 
         if ($encoding === 'normal') {
             $this->encoding = 'normal';
-            $this->xterm->write("\e[?1006l")->flush();    // todo: missing from Xterm
+            $this->xterm->unsetPrivateModeTrackMouseSgrExt()->flush();
         }
 
         return null;
