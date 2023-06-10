@@ -1,16 +1,19 @@
 <?php
 
+// This example requires 80x24 (or bigger)
+
 use Aspectus\Aspectus;
 use Aspectus\Component;
 use Aspectus\Message;
 use Aspectus\Terminal\TerminalDevice;
 use Aspectus\Terminal\Xterm;
 use Component\HexView;
-use elm\Component\ProgressBar;
+use Component\ProgressBar;
 
 require_once \dirname(__DIR__) . '/../vendor/autoload.php';
 
 // manual imports
+require_once 'StyleBuilder.php';
 require_once 'Component/HexView.php';
 require_once 'Component/ProgressBar.php';
 
@@ -50,7 +53,7 @@ class HexEditorComponent implements Component
         private readonly ProgressBar $progressBar,
         private readonly Xterm $xterm
     ) {
-        $this->progressBarStyle = (new \Aspectus\Terminal\StyleBuilder())
+        $this->progressBarStyle = (new StyleBuilder())
             ->fgi(14)
             ->bgi(12)
 //            ->bold()
@@ -76,15 +79,16 @@ class HexEditorComponent implements Component
 
     private function handleKeyPress(string $key): ?Message
     {
+        $a = 1;
         return !$this->insertMode
             ? match (strtolower($key)) {
-                'q'                         => Message::quit(),
+                'q', '<esc>'                => Message::quit(),
                 'h', 'j', "\x0a", 'k', 'l'  => $this->handleUserMoved($this->mapDirection($key)),
                 'i'                         => $this->handleInsertModeEnabled(),
                 default                     => null
             }
             : match ($key) {
-                "\x1b"                      => $this->handleInsertModeDisabled(),
+                '<ESC>'                      => $this->handleInsertModeDisabled(),
                 default                     => $this->handleUserInput($key),
             };
     }
