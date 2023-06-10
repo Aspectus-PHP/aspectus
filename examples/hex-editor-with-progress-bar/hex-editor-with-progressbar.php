@@ -69,7 +69,7 @@ class HexEditorComponent implements Component
      * Receiving `null` here, by convention means that you have a last chance to initialize something. All
      * subsequent calls to update() will contain a message.
      */
-    public function update(Message $message): ?Message
+    public function update(?Message $message): ?Message
     {
         return match ($message->type) {
             Message::KEY_PRESS => $this->handleKeyPress($message['key']),
