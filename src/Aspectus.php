@@ -14,7 +14,10 @@ use Revolt\EventLoop\UnsupportedFeatureException;
 
 final class Aspectus
 {
-    /** @var string[] */
+    /** @var string */
+    public const SIGNAL_CALLBACK_ID = "__signal_callback_id";
+
+    /** @var array<string, string> */
     private array $callbackIds = [];
 
     /** @var array<string, float> */
@@ -56,7 +59,7 @@ final class Aspectus
 
         if (\defined('SIGINT')) {
             // maybe we can do something depending on the driver, if ext-pcntl is missing
-            $this->callbackIds[] = EventLoop::onSignal(\SIGINT, $this->shutdown(...));
+            $this->callbackIds[self::SIGNAL_CALLBACK_ID] = EventLoop::onSignal(\SIGINT, $this->shutdown(...));
         }
     }
 
@@ -114,8 +117,8 @@ final class Aspectus
      */
     public function start(): void
     {
-        $newMessage = $this->runtime->update(Message::init($this));
-        // todo: should we handle the new message?
+        $this->runtime->update(Message::init($this));
+        // todo: should we handle the new message returned by update() ?
         $this->renderer->render($this->runtime);
         EventLoop::run();
     }
@@ -190,12 +193,14 @@ final class Aspectus
             return $this;
         }
 
-        $this->callbackIds[$identifier] = EventLoop::repeat(
+        // todo: psalm is being weird below thinking $identifier is mixed
+        $this->callbackIds[(string) $identifier] = EventLoop::repeat(
             $interval,
-            function ($callbackId) use (&$identifier) {
-                static $message;
-                if (!$message) {
-                    $message = Message::tick($identifier);
+            function () use (&$identifier) {
+                /** @var ?Message $message */
+                static $message = null;
+                if ($message === null) {
+                    $message = Message::tick((string) $identifier);
                 }
 
                 if ($newMessage = $this->runtime->update($message)) {
@@ -205,7 +210,7 @@ final class Aspectus
             }
         );
 
-        $this->tickers[$identifier] = $interval;
+        $this->tickers[(string) $identifier] = $interval;
 
         return $this;
     }
