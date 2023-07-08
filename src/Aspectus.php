@@ -17,7 +17,7 @@ final class Aspectus
     /** @var string[] */
     private array $callbackIds = [];
 
-    /** @var array<string, int> */
+    /** @var array<string, float> */
     private array $tickers = [];
 
     private readonly Runtime $runtime;
@@ -179,7 +179,7 @@ final class Aspectus
         }
     }
 
-    public function repeat(int $interval, string $identifier): self
+    public function repeat(float $interval, string $identifier): self
     {
         if (isset($this->tickers[$identifier])) {
             // todo: for now, but maybe we should re-set ?
