@@ -122,9 +122,9 @@ final class Aspectus
 
     public function shutdown(): void
     {
-        foreach ($this->callbackIds as $id) {
-            EventLoop::unreference($id);
-            EventLoop::cancel($id);
+        foreach ($this->callbackIds as $callbackId) {
+            EventLoop::unreference($callbackId);
+            EventLoop::cancel($callbackId);
         }
 
         $this->xterm->close();
@@ -190,7 +190,7 @@ final class Aspectus
             return $this;
         }
 
-        $this->callbackIds[] = EventLoop::repeat(
+        $this->callbackIds[$identifier] = EventLoop::repeat(
             $interval,
             function ($callbackId) use (&$identifier) {
                 static $message;
@@ -206,6 +206,20 @@ final class Aspectus
         );
 
         $this->tickers[$identifier] = $interval;
+
+        return $this;
+    }
+
+    public function cancelRepeat(string $identifier): self
+    {
+        if (isset($this->tickers[$identifier])) {
+            $callbackId = $this->callbackIds[$identifier];
+
+            EventLoop::unreference($callbackId);
+            EventLoop::cancel($callbackId);
+
+            unset($this->callbackIds[$identifier], $this->tickers[$identifier]);
+        }
 
         return $this;
     }
