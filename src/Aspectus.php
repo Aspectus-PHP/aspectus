@@ -57,9 +57,28 @@ final class Aspectus
             $this->enableMouseFocusHandling();
         }
 
+        $this->installSignalHandlers();
+    }
+
+    private function installSignalHandlers(): void
+    {
         if (\defined('SIGINT')) {
             // maybe we can do something depending on the driver, if ext-pcntl is missing
-            $this->callbackIds[self::SIGNAL_CALLBACK_ID] = EventLoop::onSignal(\SIGINT, $this->shutdown(...));
+            $this->callbackIds[] = EventLoop::onSignal(
+                \SIGINT,
+                function () {
+                    $this->handleAspectusMessages(Message::quit());
+                }
+            );
+        }
+
+        if (\defined('SIGWINCH')) {
+            $this->callbackIds[] = EventLoop::onSignal(
+                \SIGWINCH,
+                function () {
+                    $this->handleAspectusMessages(Message::resized());
+                }
+            );
         }
     }
 
@@ -131,6 +150,7 @@ final class Aspectus
         }
 
         $this->xterm->close();
+        exit();
     }
 
     private function handleInputEvents(InputEvent $event): void

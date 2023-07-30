@@ -28,6 +28,9 @@ final class Message implements \Stringable, \ArrayAccess
     public const TICK = 'tick';
 
     /** @var string */
+    public const RESIZED = 'resized';
+
+    /** @var string */
     public const TERMINATE = 'terminate';
 
     /** @var string */
@@ -74,6 +77,11 @@ final class Message implements \Stringable, \ArrayAccess
     public static function tick(string $identifier): self
     {
         return new self(self::TICK, ['id' => $identifier]);
+    }
+
+    public static function resized(): self
+    {
+        return new self(self::RESIZED);
     }
 
     public static function quit(): self
