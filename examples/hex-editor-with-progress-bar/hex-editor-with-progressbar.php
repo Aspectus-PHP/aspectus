@@ -150,7 +150,8 @@ class HexEditorComponent implements Component
         $offset = (($this->pointerY - 1) * $bytesPerLine) + $this->pointerX;
 
         $data = $this->hexView->getData();
-        $data[$offset] = $input;
+
+        $data[$offset] = $this->mapInput($input);
         $this->hexView->updateData($data);
 
         // renderer
@@ -166,6 +167,17 @@ class HexEditorComponent implements Component
         $this->progressBar->setProgress((int) (($this->cursorY / $totalLines) * 100));
 
         return null;
+    }
+
+    private function mapInput(string $input): string
+    {
+        $mappedInput = match ($input) {
+            '<SPACE>' => ' ',
+            '<TAB>' => "\t",
+            '<ENTER>' => PHP_EOL,
+            default => $input
+        };
+        return substr($mappedInput, 0, 1);
     }
 
     private function updateCursorFromPointer($bytesPerLine): void
