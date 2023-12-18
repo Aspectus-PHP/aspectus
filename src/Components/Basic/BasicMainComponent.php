@@ -24,6 +24,10 @@ class BasicMainComponent implements Component
      */
     public function update(?Message $message): ?Message
     {
+        if ($message === null) {
+            return null;
+        }
+
         return match($message->type) {
             Message::INIT => $this->onInit($message['reference']),
             Message::TERMINATE => $this->onTerminate($message['reference']),
