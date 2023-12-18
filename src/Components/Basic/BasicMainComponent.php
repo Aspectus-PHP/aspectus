@@ -19,9 +19,6 @@ class BasicMainComponent implements Component
         return '';
     }
 
-    /**
-     * @inheritDoc
-     */
     public function update(?Message $message): ?Message
     {
         if ($message === null) {
