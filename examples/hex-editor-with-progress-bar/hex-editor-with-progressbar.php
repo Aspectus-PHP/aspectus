@@ -3,7 +3,7 @@
 // This example requires 80x24 (or bigger)
 
 use Aspectus\Aspectus;
-use Aspectus\Component;
+use Aspectus\Components\Basic\DefaultMainComponent;
 use Aspectus\Message;
 use Aspectus\Terminal\TerminalDevice;
 use Aspectus\Terminal\Xterm;
@@ -29,7 +29,7 @@ really know.
 DATA;
 
 // model
-class HexEditorComponent implements Component
+class HexEditorComponent extends DefaultMainComponent
 {
     public const UP = 1;
     public const DOWN = 2;
@@ -51,8 +51,9 @@ class HexEditorComponent implements Component
     public function __construct(
         private readonly HexView $hexView,
         private readonly ProgressBar $progressBar,
-        private readonly Xterm $xterm
+        protected Xterm $xterm
     ) {
+        parent::__construct($this->xterm);
         $this->progressBarStyle = (new StyleBuilder())
             ->fgi(14)
             ->bgi(12)
@@ -71,10 +72,19 @@ class HexEditorComponent implements Component
      */
     public function update(?Message $message): ?Message
     {
-        return match ($message->type) {
+        return match ($message?->type) {
             Message::KEY_PRESS => $this->handleKeyPress($message['key']),
-            default => null,
+            default => parent::update($message),
         };
+    }
+
+    public function onInit(Aspectus $aspectus): ?Message
+    {
+        $message = parent::onInit($aspectus);
+        $this->xterm
+            ->showCursor()
+            ->flush();
+        return $message;
     }
 
     private function handleKeyPress(string $key): ?Message

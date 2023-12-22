@@ -12,6 +12,9 @@ exec(command: 'stty -echo -icanon min 1 time 0 < /dev/tty', result_code: $result
 
 // ///////////////////////////////////////
 
+/**
+ * DefaultMainComponent does by default handle the alt screen buffer
+ */
 class Timer implements Component
 {
     private int $ticksLeft = 10;
