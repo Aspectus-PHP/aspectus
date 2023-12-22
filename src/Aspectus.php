@@ -17,7 +17,7 @@ final class Aspectus
     /** @var string */
     public const SIGNAL_CALLBACK_ID = "__signal_callback_id";
 
-    /** @var array<string, string> */
+    /** @var array<string> */
     private array $callbackIds = [];
 
     /** @var array<string, float> */
