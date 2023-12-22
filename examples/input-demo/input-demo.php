@@ -1,7 +1,7 @@
 <?php
 
 use Aspectus\Aspectus;
-use Aspectus\Component;
+use Aspectus\Components\Basic\DefaultMainComponent;
 use Aspectus\Message;
 use Aspectus\Terminal\TerminalDevice;
 use Aspectus\Terminal\Xterm;
@@ -16,7 +16,7 @@ exec(command: 'stty -echo -icanon min 1 time 0 < /dev/tty', result_code: $result
 
 // ///////////////////////////////////////
 
-class MouseInputViewer implements Component
+class MouseInputViewer extends DefaultMainComponent
 {
     private string $received = '';
 
@@ -34,9 +34,10 @@ class MouseInputViewer implements Component
     private $hexView;
 
     public function __construct(
-        private readonly Xterm $xterm
+        protected Xterm $xterm
     ) {
         $this->hexView = new HexView('');
+        parent::__construct($this->xterm);
     }
 
     public function view(): string
@@ -140,14 +141,12 @@ class MouseInputViewer implements Component
         $this->mouseEvent = null;
         $this->received = '';
 
-        return match ($message->type) {
-            Message::INIT => $this->init($message['reference']),
+        return match ($message?->type) {
             Message::KEY_PRESS => $this->handleKeyPress($message['key'], $message['original']),
             Message::MOUSE_INPUT => $this->handleMouseInput($message['event']),
             Message::MOUSE_FOCUS_IN => $this->handleFocus(true),
             Message::MOUSE_FOCUS_OUT => $this->handleFocus(false),
-            Message::TERMINATE => $this->terminate($message['reference']),
-            default => null,
+            default => parent::update($message),
         };
     }
 
@@ -246,25 +245,13 @@ class MouseInputViewer implements Component
         $this->received = $sequence;
     }
 
-    public function init(Aspectus $aspectus): ?Message
+    public function onTerminate(Aspectus $aspectus): ?Message
     {
-        $aspectus->xterm
-            ->setPrivateModeSaveCursorAndEnterAlternateScreenBuffer()
-            ->hideCursor()
-            ->flush();
-
-        return null;
-    }
-
-    public function terminate(Aspectus $aspectus): ?Message
-    {
-        $aspectus->xterm
-            ->setPrivateModeRestoreCursorAndEnterNormalScreenBuffer()
-            ->showCursor()
+        $message = parent::onTerminate($aspectus);
+        $this->xterm
             ->reset()
             ->flush();
-
-        return null;
+        return $message;
     }
 }
 
