@@ -1,7 +1,7 @@
 <?php
 
 use Aspectus\Aspectus;
-use Aspectus\Components\Basic\BasicMainComponent;
+use Aspectus\Components\Basic\DefaultMainComponent;
 use Aspectus\Message;
 use Aspectus\Terminal\TerminalDevice;
 use Aspectus\Terminal\Xterm;
@@ -12,7 +12,7 @@ exec(command: 'stty -echo -icanon min 1 time 0 < /dev/tty', result_code: $result
 
 // ///////////////////////////////////////
 
-class TestMainComponent extends BasicMainComponent
+class TestMainComponent extends DefaultMainComponent
 {
     public function view(): string
     {
