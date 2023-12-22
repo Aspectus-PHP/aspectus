@@ -7,17 +7,17 @@ use Aspectus\Component;
 use Aspectus\Message;
 use Aspectus\Terminal\Xterm;
 
-class BasicMainComponent implements Component
+abstract class DefaultMainComponent implements Component
 {
+    /** @var Aspectus|null */
+    protected $aspectus;
+
     public function __construct(
         protected Xterm $xterm
     ) {
     }
 
-    public function view(): string
-    {
-        return '';
-    }
+    abstract public function view(): string;
 
     public function update(?Message $message): ?Message
     {
@@ -34,6 +34,7 @@ class BasicMainComponent implements Component
 
     protected function onInit(Aspectus $aspectus): ?Message
     {
+        $this->aspectus = $aspectus;
         $this->xterm
             ->saveCursorAndEnterAlternateScreenBuffer()
             ->hideCursor()
