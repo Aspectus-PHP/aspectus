@@ -64,11 +64,15 @@ class Timer implements Component
 
     public function update(?Message $message): ?Message
     {
-        return match ($message->type) {
-            Message::INIT => $this->init($message['reference']),
-            Message::KEY_PRESS => Message::quit(),
-            Message::TICK => $this->tick(),
-            Message::TERMINATE => $this->terminate($message['reference']),
+        if ($message === null) {
+            return null;
+        }
+
+        return match (get_class($message)) {
+            Message\Init::class => $this->init($message->aspectus),
+            Message\KeyPress::class => new Message\Quit(),
+            Message\Tick::class => $this->tick(),
+            Message\Terminate::class => $this->terminate($message->aspectus),
             default => null,
         };
     }
@@ -76,7 +80,7 @@ class Timer implements Component
     public function tick(): ?Message
     {
         $this->ticksLeft -= 1;
-        return $this->ticksLeft <= 0 ? Message::quit() : null;
+        return $this->ticksLeft <= 0 ? new Message\Quit() : null;
     }
 
     public function init(Aspectus $aspectus): ?Message

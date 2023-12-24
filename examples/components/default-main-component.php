@@ -29,9 +29,12 @@ class TestMainComponent extends DefaultMainComponent
         // we leave to the predefined (INIT/TERMINATE)
         // which we will override in this example just to show
         // how that would work (it is optional to override init/terminate).
+        if ($message === null) {
+            return parent::update($message);
+        }
 
-        return match($message->type) {
-            Message::KEY_PRESS => Message::quit(),
+        return match(get_class($message)) {
+            Message\KeyPress::class => new Message\Quit(),
             default => parent::update($message)
         };
     }

@@ -25,9 +25,9 @@ abstract class DefaultMainComponent implements Component
             return null;
         }
 
-        return match($message->type) {
-            Message::INIT => $this->onInit($message['reference']),
-            Message::TERMINATE => $this->onTerminate($message['reference']),
+        return match(get_class($message)) {
+            Message\Init::class => $this->onInit($message->aspectus),
+            Message\Terminate::class => $this->onTerminate($message->aspectus),
             default => null
         };
     }

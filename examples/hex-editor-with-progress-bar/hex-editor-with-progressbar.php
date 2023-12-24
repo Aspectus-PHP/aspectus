@@ -72,8 +72,12 @@ class HexEditorComponent extends DefaultMainComponent
      */
     public function update(?Message $message): ?Message
     {
-        return match ($message?->type) {
-            Message::KEY_PRESS => $this->handleKeyPress($message['key']),
+        if ($message === null) {
+            return parent::update($message);
+        }
+
+        return match (get_class($message)) {
+            Message\KeyPress::class => $this->handleKeyPress($message->key),
             default => parent::update($message),
         };
     }
@@ -92,7 +96,7 @@ class HexEditorComponent extends DefaultMainComponent
         $a = 1;
         return !$this->insertMode
             ? match (strtolower($key)) {
-                'q', '<esc>'                => Message::quit(),
+                'q', '<esc>'                => new Message\Quit(),
                 'h', 'j', "\x0a", 'k', 'l'  => $this->handleUserMoved($this->mapDirection($key)),
                 'i'                         => $this->handleInsertModeEnabled(),
                 default                     => null
