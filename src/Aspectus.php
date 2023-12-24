@@ -3,6 +3,7 @@
 namespace Aspectus;
 
 use Aspectus\Internal\Runtime;
+use Aspectus\Message;
 use Aspectus\Render\StandardRenderer;
 use Aspectus\Terminal\Event\InputEvent;
 use Aspectus\Terminal\Xterm;
@@ -67,7 +68,7 @@ final class Aspectus
             $this->callbackIds[] = EventLoop::onSignal(
                 \SIGINT,
                 function () {
-                    $this->handleAspectusMessages(Message::quit());
+                    $this->handleAspectusMessages(new Message\Quit('SIGINT received'));
                 }
             );
         }
@@ -76,7 +77,8 @@ final class Aspectus
             $this->callbackIds[] = EventLoop::onSignal(
                 \SIGWINCH,
                 function () {
-                    $this->handleAspectusMessages(Message::resized());
+                    // todo: add actual Y and X
+                    $this->handleAspectusMessages(new Message\WindowResized(1, 1));
                 }
             );
         }
@@ -136,7 +138,7 @@ final class Aspectus
      */
     public function start(): void
     {
-        $this->runtime->update(Message::init($this));
+        $this->runtime->update(new Message\Init($this));
         // todo: should we handle the new message returned by update() ?
         $this->renderer->render($this->runtime);
         EventLoop::run();
@@ -159,23 +161,23 @@ final class Aspectus
         // this has problems with function keys as well, and possibly other things
         // that have "escaped" being treated as special (all those start with 0x1b probably)
         foreach (str_split($event->data, 1) as $char) {
-            $this->updateCycle(Message::keyPress($char));
+            $this->updateCycle(new Message\KeyPress($char, $char));
         }
     }
 
     private function handleSpecialInputEvents(SpecialKeyEvent $event): void
     {
-        $this->updateCycle(Message::keyPress($event->data, $event->originalData));
+        $this->updateCycle(new Message\KeyPress($event->data, $event->originalData));
     }
 
     private function handleMouseInputEvents(MouseInputEvent $event): void
     {
-        $this->updateCycle(Message::mouseInput($event));
+        $this->updateCycle(new Message\MouseInput($event));
     }
 
     private function handleMouseFocusEvents(MouseFocusEvent $event): void
     {
-        $this->updateCycle($event->focus() ? Message::mouseFocusIn() : Message::mouseFocusOut());
+        $this->updateCycle(new Message\MouseFocus($event->focus()));
     }
 
     private function updateCycle(Message $message): void
@@ -194,8 +196,8 @@ final class Aspectus
         // $message maybe contains Aspectus related messages, like Quit, or for example maybe ResizeTriggered.. whatever
         // we care about anyway. Or maybe we have another one that says SkipRender which will simply skip the renderer
 
-        if ($message->type == Message::QUIT) {
-            $this->runtime->update(Message::terminate($this));
+        if ($message->getType() == Message::QUIT) {
+            $this->runtime->update(new Message\Terminate($this));
             // todo: no more message processing ? what if they want to say goodbye?
 
             $this->shutdown();
@@ -220,7 +222,7 @@ final class Aspectus
                 /** @var ?Message $message */
                 static $message = null;
                 if ($message === null) {
-                    $message = Message::tick((string) $identifier);
+                    $message = new Message\Tick((string) $identifier);
                 }
 
                 if ($newMessage = $this->runtime->update($message)) {

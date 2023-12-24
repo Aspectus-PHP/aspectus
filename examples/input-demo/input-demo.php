@@ -137,15 +137,18 @@ class MouseInputViewer extends DefaultMainComponent
 
     public function update(?Message $message): ?Message
     {
+        if ($message === null) {
+            return parent::update($message);
+        }
+
         // reset some of the state
         $this->mouseEvent = null;
         $this->received = '';
 
-        return match ($message?->type) {
-            Message::KEY_PRESS => $this->handleKeyPress($message['key'], $message['original']),
-            Message::MOUSE_INPUT => $this->handleMouseInput($message['event']),
-            Message::MOUSE_FOCUS_IN => $this->handleFocus(true),
-            Message::MOUSE_FOCUS_OUT => $this->handleFocus(false),
+        return match (get_class($message)) {
+            Message\KeyPress::class => $this->handleKeyPress($message->key, $message->original),
+            Message\MouseInput::class => $this->handleMouseInput($message->event),
+            Message\MouseFocus::class => $this->handleFocus($message->focusIn),
             default => parent::update($message),
         };
     }
@@ -153,7 +156,7 @@ class MouseInputViewer extends DefaultMainComponent
     private function handleKeyPress(string $key, ?string $original = null): ?Message
     {
         return match (strtolower($key)) {
-            'q' => Message::quit(),
+            'q' => new Message\Quit(),
             'k' => $this->changeMode('keyboard'),
             '1' => $this->changeMode('normal'),
             '2' => $this->changeMode('anyButton'),
