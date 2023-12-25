@@ -17,7 +17,7 @@ require_once 'StyleBuilder.php';
 require_once 'Component/HexView.php';
 require_once 'Component/ProgressBar.php';
 
-exec(command: 'stty -echo -icanon min 1 time 0 < /dev/tty', result_code: $resultCode);
+exec('stty -echo -icanon min 1 time 0 < /dev/tty');
 
 // ///////////////////////////////////////
 
@@ -46,6 +46,9 @@ class HexEditorComponent extends DefaultMainComponent
 
     private ?int $singleLineToRender = null;
 
+    /**
+     * @var callable(): string
+     */
     private $progressBarStyle;
 
     public function __construct(
@@ -243,6 +246,7 @@ class HexEditorComponent extends DefaultMainComponent
     private function partialView(): string
     {
         $progressBarView = ($this->progressBarStyle) ($this->progressBar->view());
+        /** @psalm-suppress PossiblyNullOperand */
         $y = $this->cursorY - ($this->cursorY - $this->singleLineToRender - 1);
 
         return $this->xterm

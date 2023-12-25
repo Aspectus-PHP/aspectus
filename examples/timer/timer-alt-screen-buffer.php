@@ -8,7 +8,7 @@ use Aspectus\Terminal\Xterm;
 
 require_once \dirname(__DIR__) . '/../vendor/autoload.php';
 
-exec(command: 'stty -echo -icanon min 1 time 0 < /dev/tty', result_code: $resultCode);
+exec('stty -echo -icanon min 1 time 0 < /dev/tty');
 
 // ///////////////////////////////////////
 
