@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="5.13.1@086b94371304750d1c673315321a55d15fc59015">
+  <file src="examples/hex-editor-with-progress-bar/StyleBuilder.php">
+    <InvalidArgument>
+      <code>$entry</code>
+    </InvalidArgument>
+    <InvalidArrayOffset>
+      <code><![CDATA[$entry['sequence']]]></code>
+      <code><![CDATA[$entry['sequence']]]></code>
+    </InvalidArrayOffset>
+    <InvalidPropertyAssignmentValue>
+      <code><![CDATA[$this->modifiers]]></code>
+      <code><![CDATA[$this->modifiers]]></code>
+    </InvalidPropertyAssignmentValue>
+    <MixedArgument>
+      <code>$sequence</code>
+      <code>func_get_args()</code>
+    </MixedArgument>
+    <MixedOperand>
+      <code><![CDATA[$entry['sequence']]]></code>
+      <code><![CDATA[$entry['sequence']]]></code>
+    </MixedOperand>
+  </file>
+  <file src="examples/hex-editor-with-progress-bar/hex-editor-with-progressbar.php">
+    <MissingParamType>
+      <code>$bytesPerLine</code>
+    </MissingParamType>
+    <MixedAssignment>
+      <code><![CDATA[$this->cursorX]]></code>
+    </MixedAssignment>
+    <MixedOperand>
+      <code>$bytesPerLine</code>
+    </MixedOperand>
+    <MixedPropertyTypeCoercion>
+      <code><![CDATA[(new StyleBuilder())
+            ->fgi(14)
+            ->bgi(12)
+//            ->bold()
+            ->write('%s')
+            ->normal()
+            ->buildCallable()]]></code>
+    </MixedPropertyTypeCoercion>
+    <TooManyArguments>
+      <code><![CDATA[($this->progressBarStyle) ($this->progressBar->view())]]></code>
+      <code><![CDATA[($this->progressBarStyle) ($this->progressBar->view())]]></code>
+    </TooManyArguments>
+    <UnusedVariable>
+      <code>$a</code>
+    </UnusedVariable>
+  </file>
+  <file src="examples/input-demo/Component/HexView.php">
+    <DuplicateClass>
+      <code>HexView</code>
+    </DuplicateClass>
+  </file>
+</files>
