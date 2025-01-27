@@ -23,6 +23,6 @@
         "sort-packages": true
     },
     "require-dev": {
-        "psalm/phar": "^5.9"
+        "psalm/phar": "^5.9 || ^6.0"
     }
 }
